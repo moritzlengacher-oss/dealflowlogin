@@ -1,15 +1,18 @@
 /*
-  DealFlow Schweiz - echtes Login mit Supabase
+  DealFlow Schweiz - echter Login mit Supabase + Paywall
 
-  Schritt 1:
-  Ersetze SUPABASE_URL und SUPABASE_ANON_KEY mit deinen echten Daten aus Supabase:
-  Project Settings -> API -> Project URL und anon public key
+  Prinzip:
+  - Nutzer können ein Konto erstellen.
+  - Zugriff auf den Mitgliederbereich gibt es erst, wenn subscription_status = active ist.
+  - Stripe Webhook setzt bezahlte Mitglieder automatisch auf active.
+  - Falls jemand bezahlt, bevor er ein Konto erstellt, wird die Zahlung in paid_memberships gespeichert
+    und beim ersten Login automatisch dem Account zugeordnet.
 
-  Schritt 2:
-  Führe die Datei supabase-schema.sql im Supabase SQL Editor aus.
+  In Supabase müssen ausgeführt sein:
+  - supabase-schema.sql
+  - supabase-paywall-fix.sql
 
-  Schritt 3:
-  Lade index.html und app.js gemeinsam zu Vercel/Netlify hoch.
+  In dieser Datei sind deine Supabase Frontend Keys bereits eingetragen.
 */
 
 const SUPABASE_URL = "https://zguxggwetwwkduhwbiwc.supabase.co";
@@ -82,7 +85,7 @@ function setAuthMode(mode) {
   authMode = mode;
   document.getElementById("loginTab").classList.toggle("active", mode === "login");
   document.getElementById("signupTab").classList.toggle("active", mode === "signup");
-  document.getElementById("authSubmit").textContent = mode === "login" ? "Einloggen" : "Account erstellen";
+  document.getElementById("authSubmit").textContent = mode === "login" ? "Einloggen" : "Konto nach Zahlung erstellen";
   document.querySelectorAll(".signup-only").forEach(el => el.classList.toggle("hidden", mode !== "signup"));
   setStatus("authStatus", "", "");
 }
@@ -90,7 +93,6 @@ function setAuthMode(mode) {
 async function submitAuth() {
   const email = document.getElementById("authEmail").value.trim();
   const password = document.getElementById("authPassword").value;
-  const plan = document.getElementById("authPlan").value;
 
   if (!email || !password) {
     setStatus("authStatus", "Bitte E-Mail und Passwort eingeben.", "err");
@@ -103,15 +105,16 @@ async function submitAuth() {
     if (authMode === "signup") {
       const { data, error } = await supabaseClient.auth.signUp({
         email,
-        password,
-        options: {
-          data: { plan }
-        }
+        password
       });
 
       if (error) throw error;
 
-      setStatus("authStatus", "Account erstellt. Falls E-Mail-Bestätigung aktiv ist, bitte Postfach prüfen. Danach kannst du dich einloggen.", "ok");
+      setStatus(
+        "authStatus",
+        "Account erstellt. Wichtig: Zugriff wird nur freigeschaltet, wenn diese E-Mail bereits über Stripe bezahlt hat. Falls E-Mail-Bestätigung aktiv ist, bitte Postfach prüfen.",
+        "ok"
+      );
     } else {
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
@@ -125,29 +128,45 @@ async function submitAuth() {
 async function handleLoggedIn(user) {
   currentUser = user;
 
+  // Falls Nutzer schon bezahlt hat, aber erst danach Konto erstellt, wird hier automatisch aktiviert.
+  try {
+    await supabaseClient.rpc("activate_paid_membership_for_current_user");
+  } catch (err) {
+    console.warn("Paid membership activation check failed:", err);
+  }
+
   const { data: profile, error } = await supabaseClient
     .from("member_profiles")
     .select("*")
     .eq("id", user.id)
     .single();
 
-  if (error && error.code !== "PGRST116") {
+  if (error) {
     console.warn(error);
+    await supabaseClient.auth.signOut();
+    openAuth();
+    setStatus("authStatus", "Dein Mitgliederprofil wurde noch nicht erstellt. Bitte versuche es erneut.", "err");
+    return;
   }
 
-  if (!profile) {
-    const plan = user.user_metadata?.plan || "Starter";
-    await upsertMemberProfile(user.id, user.email, plan);
-    currentProfile = { id: user.id, email: user.email, plan };
-  } else {
-    currentProfile = profile;
+  currentProfile = profile;
+
+  if (currentProfile.subscription_status !== "active") {
+    await supabaseClient.auth.signOut();
+    openAuth();
+    setStatus(
+      "authStatus",
+      "Zugriff noch nicht freigeschaltet. Bitte zuerst ein Paket über Stripe kaufen und danach mit derselben E-Mail einloggen.",
+      "err"
+    );
+    return;
   }
 
   document.getElementById("loginBtn").classList.add("hidden");
   document.getElementById("logoutBtn").classList.remove("hidden");
   document.getElementById("memberNavLink").classList.remove("hidden");
   document.getElementById("mitgliederbereich").style.display = "block";
-  document.getElementById("memberPlanBadge").textContent = `${currentProfile.plan || "Starter"} Mitglied`;
+  document.getElementById("memberPlanBadge").textContent = `${currentProfile.plan || "Starter"} Mitglied · Aktiv`;
 
   await loadProfileForm();
   renderDeals();
@@ -170,19 +189,6 @@ function handleLoggedOut() {
 async function logoutMember() {
   await supabaseClient.auth.signOut();
   window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-async function upsertMemberProfile(id, email, plan) {
-  const { error } = await supabaseClient
-    .from("member_profiles")
-    .upsert({
-      id,
-      email,
-      plan,
-      updated_at: new Date().toISOString()
-    });
-
-  if (error) throw error;
 }
 
 function showPortalTab(tab, btn) {
@@ -229,7 +235,7 @@ function openUpgradeFor(plan) {
 }
 
 async function requestNda(dealId, dealTitle) {
-  if (!currentUser) return openAuth();
+  if (!currentUser || currentProfile?.subscription_status !== "active") return openAuth();
 
   const { error } = await supabaseClient
     .from("nda_requests")
@@ -291,7 +297,7 @@ async function loadProfileForm() {
 }
 
 async function saveProfile() {
-  if (!currentUser) return openAuth();
+  if (!currentUser || currentProfile?.subscription_status !== "active") return openAuth();
 
   const payload = {
     user_id: currentUser.id,
@@ -315,7 +321,7 @@ async function saveProfile() {
 }
 
 async function submitCapitalRequest() {
-  if (!currentUser) return openAuth();
+  if (!currentUser || currentProfile?.subscription_status !== "active") return openAuth();
 
   const { error } = await supabaseClient
     .from("capital_requests")

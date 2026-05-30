@@ -412,10 +412,10 @@
   <div class="modal" id="authModal">
     <div class="modal-box">
       <h3>Mitglieder Login</h3>
-      <p style="color:var(--muted)">Melde dich an oder registriere dich für den geschützten Mitgliederbereich.</p>
+      <p style="color:var(--muted)">Melde dich an. Neue Konten erhalten Zugriff erst nach erfolgreicher Stripe-Zahlung.</p>
       <div class="auth-tabs">
         <button id="loginTab" class="active" onclick="setAuthMode('login')">Login</button>
-        <button id="signupTab" onclick="setAuthMode('signup')">Registrieren</button>
+        <button id="signupTab" onclick="setAuthMode('signup')">Konto nach Zahlung</button>
       </div>
       <input id="authEmail" type="email" placeholder="E-Mail">
       <input id="authPassword" type="password" placeholder="Passwort">
@@ -429,7 +429,7 @@
         <button class="close-btn" onclick="closeAuth()">Abbrechen</button>
       </div>
       <div id="authStatus" class="status"></div>
-      <p style="color:var(--muted);font-size:13px;margin-top:18px;">Registrierung erstellt einen echten Supabase-User. Je nach Supabase-Einstellung ist eine E-Mail-Bestätigung erforderlich.</p>
+      <p style="color:var(--muted);font-size:13px;margin-top:18px;">Zugriff auf den Mitgliederbereich wird erst nach erfolgreicher Zahlung freigeschaltet. Bitte im Stripe Checkout dieselbe E-Mail verwenden.</p>
     </div>
   </div>
 
@@ -438,7 +438,7 @@
       <h3 id="paymentPlan">Mitgliedschaft</h3>
       <div class="payment-price" id="paymentPrice">CHF 0 / Monat</div>
       <p class="payment-note">
-        Du wirst im nächsten Schritt zu einem sicheren Stripe-Zahlungsfenster weitergeleitet. Kreditkartendaten werden nicht auf dieser Website gespeichert.
+        Du wirst im nächsten Schritt zu einem sicheren Stripe-Zahlungsfenster weitergeleitet. Bitte verwende im Stripe Checkout dieselbe E-Mail-Adresse wie beim Login, damit dein Zugang automatisch freigeschaltet wird. Kreditkartendaten werden nicht auf dieser Website gespeichert.
       </p>
       <div class="modal-actions">
         <a class="btn" id="paymentLink" href="#" target="_blank" rel="noopener">Sicher bezahlen</a>
