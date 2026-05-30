@@ -111,11 +111,7 @@ async function submitAuth() {
 
       if (error) throw error;
 
-      if (data.user) {
-        await upsertMemberProfile(data.user.id, email, plan);
-      }
-
-      setStatus("authStatus", "Account erstellt. Falls E-Mail-Bestätigung aktiv ist, bitte Postfach prüfen.", "ok");
+      setStatus("authStatus", "Account erstellt. Falls E-Mail-Bestätigung aktiv ist, bitte Postfach prüfen. Danach kannst du dich einloggen.", "ok");
     } else {
       const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) throw error;
