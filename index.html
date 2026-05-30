@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DealFlow Schweiz | Mitgliederplattform</title>
+  <meta name="description" content="DealFlow Schweiz verbindet Investoren, Private Equity, Unternehmer und Nachfolgelösungen diskret mit Off-Market Deals, Kapitalbedarf und Schweizer KMU-Opportunitäten." />
+  <meta name="keywords" content="DealFlow Schweiz, Off-Market Deals, Unternehmensverkauf Schweiz, Nachfolge Schweiz, Private Equity Schweiz, Family Office Schweiz, Kapitalbedarf KMU" />
+
+  <style>
+    :root {
+      --bg: #07111f;
+      --card: rgba(255,255,255,0.075);
+      --card2: rgba(255,255,255,0.11);
+      --gold: #d7b56d;
+      --gold2: #f2d58a;
+      --text: #f5f7fb;
+      --muted: #b7c0cf;
+      --line: rgba(255,255,255,0.14);
+      --white: #ffffff;
+      --green: #5ee0a0;
+      --red: #ff6b6b;
+      --shadow: 0 24px 80px rgba(0,0,0,.35);
+      --radius: 26px;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top right, rgba(215,181,109,.2), transparent 34%), linear-gradient(180deg, var(--bg), #050910 78%);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    .container { width: min(1160px, calc(100% - 40px)); margin: 0 auto; }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(7,17,31,.72);
+      border-bottom: 1px solid var(--line);
+    }
+    nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -.03em; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--gold), #8e6a24);
+      display: grid; place-items: center; color: #07111f; font-weight: 900;
+      box-shadow: 0 12px 30px rgba(215,181,109,.22);
+    }
+    .navlinks { display: flex; gap: 26px; color: var(--muted); font-size: 14px; }
+    .navlinks a:hover { color: var(--white); }
+    .nav-actions { display:flex; gap:10px; align-items:center; }
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 20px; border-radius: 999px; font-weight: 750;
+      background: linear-gradient(135deg, var(--gold2), var(--gold)); color: #09111d;
+      box-shadow: 0 14px 40px rgba(215,181,109,.22);
+      border: 0; cursor: pointer;
+    }
+    .btn.secondary { background: transparent; color: var(--white); border: 1px solid var(--line); box-shadow: none; }
+    .btn.danger { background: transparent; color: var(--red); border: 1px solid rgba(255,107,107,.35); box-shadow: none; }
+    .btn.small { padding: 9px 14px; font-size: 13px; }
+
+    .hero { padding: 92px 0 72px; position: relative; overflow: hidden; }
+    .hero-grid { display: grid; grid-template-columns: 1.05fr .95fr; gap: 54px; align-items: center; }
+    .eyebrow { display: inline-flex; gap: 8px; align-items: center; color: var(--gold2); background: rgba(215,181,109,.12); border: 1px solid rgba(215,181,109,.25); padding: 8px 13px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+    h1 { font-size: clamp(42px, 6vw, 76px); line-height: .97; letter-spacing: -.07em; margin: 22px 0; }
+    .lead { font-size: 20px; color: var(--muted); max-width: 650px; }
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 32px; }
+    .trust { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 34px; color: var(--muted); font-size: 14px; }
+    .trust span { display: flex; gap: 8px; align-items: center; }
+    .dot { width: 8px; height: 8px; background: var(--green); border-radius: 999px; }
+
+    .deal-card {
+      background: linear-gradient(180deg, rgba(255,255,255,.12), rgba(255,255,255,.055));
+      border: 1px solid var(--line); border-radius: var(--radius); padding: 26px;
+      box-shadow: var(--shadow); position: relative; overflow: hidden;
+    }
+    .deal-title { font-size: 23px; font-weight: 850; letter-spacing: -.03em; margin: 18px 0 8px; }
+    .deal-meta { color: var(--muted); font-size: 14px; }
+    .badge { padding: 7px 11px; border-radius: 999px; background: rgba(94,224,160,.13); color: #8ff0be; font-size: 12px; font-weight: 800; display:inline-flex; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+    .metric { padding: 18px; border-radius: 18px; background: rgba(255,255,255,.07); border: 1px solid var(--line); }
+    .metric strong { display:block; font-size: 22px; color: var(--white); }
+    .metric small { color: var(--muted); }
+    .blurred { margin-top: 18px; padding: 18px; border-radius: 18px; background: rgba(255,255,255,.055); border: 1px dashed rgba(255,255,255,.22); color: var(--muted); }
+
+    section { padding: 82px 0; }
+    .section-head { max-width: 780px; margin-bottom: 34px; }
+    h2 { font-size: clamp(32px, 4vw, 52px); line-height: 1.05; letter-spacing: -.055em; margin: 0 0 16px; }
+    .section-head p { color: var(--muted); font-size: 18px; margin: 0; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 26px; }
+    .icon { width: 48px; height: 48px; border-radius: 16px; display: grid; place-items: center; background: rgba(215,181,109,.13); color: var(--gold2); font-size: 22px; margin-bottom: 18px; }
+    h3 { font-size: 22px; letter-spacing: -.035em; margin: 0 0 10px; }
+    .card p, .card li { color: var(--muted); }
+    ul { padding-left: 18px; margin: 14px 0 0; }
+
+    .pricing { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: stretch; }
+    .price-card { padding: 30px; border-radius: 30px; border: 1px solid var(--line); background: rgba(255,255,255,.075); position: relative; }
+    .price-card.featured { background: linear-gradient(180deg, rgba(215,181,109,.18), rgba(255,255,255,.075)); border-color: rgba(215,181,109,.42); box-shadow: var(--shadow); transform: scale(1.025); }
+    .price { font-size: 42px; font-weight: 900; letter-spacing: -.06em; margin: 12px 0; }
+    .price span { font-size: 15px; color: var(--muted); font-weight: 600; letter-spacing: 0; }
+    .label { position: absolute; top: 18px; right: 18px; font-size: 12px; color: #07111f; background: var(--gold2); padding: 6px 10px; border-radius: 999px; font-weight: 900; }
+
+    .cta { background: linear-gradient(135deg, rgba(215,181,109,.22), rgba(255,255,255,.06)); border: 1px solid rgba(215,181,109,.32); border-radius: 34px; padding: 42px; display: grid; grid-template-columns: 1.2fr .8fr; gap: 26px; align-items: center; }
+    .faq details { background: rgba(255,255,255,.065); border: 1px solid var(--line); border-radius: 20px; padding: 20px 22px; margin-bottom: 12px; }
+    .faq summary { cursor: pointer; font-weight: 800; }
+    .faq p { color: var(--muted); margin-bottom: 0; }
+
+    input, select, textarea {
+      width: 100%; margin-bottom: 12px; padding: 14px 15px; border-radius: 14px;
+      border: 1px solid var(--line); background: rgba(255,255,255,.07); color: var(--white); outline: 0;
+    }
+    textarea { min-height: 110px; resize: vertical; }
+    input::placeholder, textarea::placeholder { color: #8d98aa; }
+
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,.72); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+    .modal-box { width: min(500px, 100%); background: #0b1627; border: 1px solid var(--line); border-radius: 30px; padding: 30px; box-shadow: var(--shadow); }
+    .modal-actions { display:flex; gap:10px; flex-wrap:wrap; margin-top:10px; }
+    .auth-tabs { display:flex; gap:8px; margin:18px 0; }
+    .auth-tabs button { flex:1; border:1px solid var(--line); background:rgba(255,255,255,.07); color:white; border-radius:999px; padding:11px; cursor:pointer; font-weight:750; }
+    .auth-tabs button.active { background: linear-gradient(135deg, var(--gold2), var(--gold)); color:#07111f; }
+
+    .payment-modal { position: fixed; inset: 0; background: rgba(0,0,0,.68); display: none; align-items: center; justify-content: center; z-index: 999; padding: 20px; }
+    .payment-box { width: min(520px, 100%); background: #0b1627; border: 1px solid var(--line); border-radius: 30px; padding: 30px; box-shadow: var(--shadow); }
+    .payment-price { color: var(--gold2); font-size: 24px; font-weight: 900; margin: 12px 0 18px; }
+    .payment-note { color: var(--muted); font-size: 14px; margin-bottom: 22px; }
+    .close-btn { background: transparent; border: 1px solid var(--line); color: var(--white); padding: 13px 20px; border-radius: 999px; cursor: pointer; font-weight: 750; }
+
+    .portal-shell { display: none; background: #07111f; border-top: 1px solid var(--line); }
+    .portal-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-bottom: 28px; }
+    .portal-badge { display: inline-flex; padding: 8px 12px; border-radius: 999px; background: rgba(215,181,109,.14); color: var(--gold2); font-weight: 800; font-size: 13px; }
+    .portal-nav { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 24px; }
+    .portal-nav button { border: 1px solid var(--line); background: rgba(255,255,255,.06); color: var(--white); border-radius: 999px; padding: 11px 15px; cursor: pointer; font-weight: 750; }
+    .portal-nav button.active { background: var(--gold); color: #07111f; }
+    .portal-section { display: none; }
+    .portal-section.active { display: block; }
+    .deal-list { display: grid; gap: 14px; }
+    .member-deal { padding: 20px; border-radius: 22px; background: rgba(255,255,255,.07); border: 1px solid var(--line); display: grid; grid-template-columns: 1fr auto; gap: 16px; align-items: center; }
+    .member-deal small { color: var(--muted); }
+    .locked { opacity: .58; }
+    .status { margin-top: 12px; color: var(--muted); font-size: 14px; }
+    .status.ok { color: #8ff0be; }
+    .status.err { color: var(--red); }
+    .hidden { display:none !important; }
+
+    .footer-trust { border-top: 1px solid rgba(255,255,255,.08); padding: 20px 0; text-align: center; color: var(--muted); font-size: 14px; }
+    footer { padding: 38px 0; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+    .footer-grid { display:flex; justify-content:space-between; gap: 20px; flex-wrap:wrap; }
+
+    @media (max-width: 880px) {
+      .hero-grid, .grid-3, .grid-2, .pricing, .cta { grid-template-columns: 1fr; }
+      .navlinks { display: none; }
+      nav { align-items:flex-start; }
+      .nav-actions { flex-wrap:wrap; justify-content:flex-end; }
+      h1 { font-size: 44px; }
+      .price-card.featured { transform: none; }
+      .hero { padding-top: 58px; }
+      .member-deal { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a class="brand" href="#top"><span class="logo">DF</span><span>DealFlow Schweiz</span></a>
+        <div class="navlinks">
+          <a href="#deals">Deals</a>
+          <a href="#pricing">Preise</a>
+          <a href="#mitgliederbereich" id="memberNavLink" class="hidden">Mitgliederbereich</a>
+          <a href="#faq">FAQ</a>
+        </div>
+        <div class="nav-actions">
+          <button class="btn secondary" id="loginBtn" onclick="openAuth()">Login</button>
+          <button class="btn danger hidden" id="logoutBtn" onclick="logoutMember()">Logout</button>
+          <a class="btn" href="#termin">Gespräch buchen</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="eyebrow">Diskreter Zugang zu Schweizer Unternehmensdeals</div>
+          <h1>Off-Market Deals. Nachfolge. Kapital. Alles an einem Ort.</h1>
+          <p class="lead">DealFlow Schweiz verbindet Investoren, Private Equity, Unternehmer und kapitalseitige Partner mit relevanten KMU-Transaktionen, Nachfolgelösungen und Kapitalanfragen in der Schweiz.</p>
+          <div class="hero-actions">
+            <a href="#pricing" class="btn">Mitgliedschaft ansehen</a>
+            <a href="#termin" class="btn secondary">Deal besprechen</a>
+          </div>
+          <div class="trust">
+            <span><i class="dot"></i> Diskrete Vorqualifikation</span>
+            <span><i class="dot"></i> Schweizer KMU-Fokus</span>
+            <span><i class="dot"></i> Investoren & Unternehmer</span>
+          </div>
+        </div>
+
+        <div class="deal-card">
+          <div class="badge">Beispiel Deal Preview</div>
+          <div class="deal-title">Nachfolgelösung für profitables B2B-Dienstleistungsunternehmen</div>
+          <div class="deal-meta">Region: Deutschschweiz · Branche: Services · Status: vertraulich</div>
+          <div class="metrics">
+            <div class="metric"><strong>CHF 2.8M</strong><small>Umsatz p.a.</small></div>
+            <div class="metric"><strong>14%</strong><small>EBITDA-Marge</small></div>
+            <div class="metric"><strong>20+</strong><small>Jahre am Markt</small></div>
+            <div class="metric"><strong>100%</strong><small>Nachfolge offen</small></div>
+          </div>
+          <div class="blurred">Detaildaten, Verkäuferkontakt und Unterlagen werden erst nach Freigabe, NDA und Interessentenprüfung geteilt.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="deals">
+      <div class="container">
+        <div class="section-head">
+          <h2>Vier Deal-Kategorien für den Schweizer Mittelstand.</h2>
+          <p>DealFlow Schweiz ist kein Massenportal. Der Fokus liegt auf relevanten Opportunitäten, diskreter Vermittlung und klarer Vorqualifikation.</p>
+        </div>
+        <div class="grid-3">
+          <div class="card"><div class="icon">🏢</div><h3>Unternehmensverkäufe</h3><p>KMU-Inhaber, die einen Teilverkauf, vollständigen Exit oder strategischen Käufer suchen.</p></div>
+          <div class="card"><div class="icon">🤝</div><h3>Nachfolgelösungen</h3><p>Unternehmen mit stabiler Substanz, aber fehlender interner Nachfolge oder Wachstumsnachfolger.</p></div>
+          <div class="card"><div class="icon">🔒</div><h3>Off-Market Deals</h3><p>Diskrete Transaktionen, die nicht öffentlich ausgeschrieben werden und nur qualifizierten Mitgliedern zugänglich sind.</p></div>
+          <div class="card"><div class="icon">💰</div><h3>Kapitalbedarf</h3><p>Unternehmer mit Bedarf an Wachstumskapital, Bridge-Finanzierung, Beteiligungskapital oder strategischen Partnern.</p></div>
+          <div class="card"><div class="icon">📈</div><h3>Buy-Side Mandate</h3><p>Investoren und Unternehmer, die gezielt Firmen in bestimmten Branchen, Regionen oder Umsatzgrössen suchen.</p></div>
+          <div class="card"><div class="icon">🧭</div><h3>Deal Sourcing</h3><p>Strukturierter Zugang zu potenziellen Targets über Netzwerk, direkte Ansprache und diskrete Vorabklärung.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pricing">
+      <div class="container">
+        <div class="section-head">
+          <h2>Mitgliedschaften ab CHF 99 pro Monat.</h2>
+          <p>Für unterschiedliche Käuferprofile, Investoren und Unternehmer. Jeder Zugang wird manuell geprüft.</p>
+        </div>
+        <div class="pricing">
+          <div class="price-card">
+            <h3>Starter</h3>
+            <p>Für Unternehmer, Suchende und kleinere Investoren.</p>
+            <div class="price">CHF 99 <span>/ Monat</span></div>
+            <ul>
+              <li>Monatliche Deal-Previews</li>
+              <li>Basis-Zugang zu anonymisierten Opportunitäten</li>
+              <li>Einreichung von Suchprofilen</li>
+              <li>Newsletter & Marktupdates</li>
+            </ul>
+            <br><button class="btn secondary" onclick="openPayment('Starter', 'CHF 99 / Monat', 'https://buy.stripe.com/6oU9ASgIhek1awD53edUY00')">Mit Starter starten</button>
+          </div>
+          <div class="price-card featured">
+            <div class="label">Empfohlen</div>
+            <h3>Investor</h3>
+            <p>Für aktive Käufer, Family Offices und Beteiligungspartner.</p>
+            <div class="price">CHF 249 <span>/ Monat</span></div>
+            <ul>
+              <li>Priorisierter Deal-Zugang</li>
+              <li>Filter nach Branche, Region und Dealgrösse</li>
+              <li>NDA-Prozess für passende Deals</li>
+              <li>Direkte Einleitung nach Freigabe</li>
+              <li>Quartalsweise Suchprofil-Abstimmung</li>
+            </ul>
+            <br><button class="btn" onclick="openPayment('Investor', 'CHF 249 / Monat', 'https://buy.stripe.com/fZu8wO1Nnfo548f8fqdUY01')">Investor-Zugang kaufen</button>
+          </div>
+          <div class="price-card">
+            <h3>Professional</h3>
+            <p>Für Private Equity, M&A-Berater und aktive Buy-Side Mandate.</p>
+            <div class="price">CHF 499 <span>/ Monat</span></div>
+            <ul>
+              <li>Individuelles Deal Sourcing</li>
+              <li>Buy-Side Suchmandat Light</li>
+              <li>Priorität bei passenden Targets</li>
+              <li>Direkte Unternehmeransprache nach Absprache</li>
+              <li>Monatlicher Dealflow Call</li>
+            </ul>
+            <br><button class="btn secondary" onclick="openPayment('Professional', 'CHF 499 / Monat', 'https://buy.stripe.com/7sY8wO9fPcbT0W3gLWdUY02')">Professional kaufen</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="mitgliederbereich" class="portal-shell">
+      <div class="container">
+        <div class="portal-header">
+          <div>
+            <div class="portal-badge" id="memberPlanBadge">Mitglied</div>
+            <h2 style="margin-top:14px;">DealFlow Mitgliederbereich</h2>
+            <p class="lead">Dein geschützter Bereich für Deal-Previews, Suchprofil, Kapitalanfragen, NDA-Prozess und Upgrades.</p>
+          </div>
+          <button class="btn danger" onclick="logoutMember()">Logout</button>
+        </div>
+
+        <div class="portal-nav">
+          <button class="active" onclick="showPortalTab('dashboard', this)">Dashboard</button>
+          <button onclick="showPortalTab('deals', this)">Deal-Previews</button>
+          <button onclick="showPortalTab('profile', this)">Suchprofil</button>
+          <button onclick="showPortalTab('capital', this)">Kapitalanfragen</button>
+          <button onclick="showPortalTab('nda', this)">NDA & Freigaben</button>
+          <button onclick="showPortalTab('upgrade', this)">Upgrade</button>
+        </div>
+
+        <div id="portal-dashboard" class="portal-section active">
+          <div class="grid-3">
+            <div class="card"><div class="icon">📊</div><h3>Neue Previews</h3><p><strong style="font-size:30px;color:white;">12</strong><br>anonymisierte Opportunitäten verfügbar</p></div>
+            <div class="card"><div class="icon">🤝</div><h3>Matches</h3><p><strong style="font-size:30px;color:white;">4</strong><br>passen zu deinem aktuellen Suchprofil</p></div>
+            <div class="card"><div class="icon">🔒</div><h3>NDA Status</h3><p><strong style="font-size:30px;color:white;">1</strong><br>Freigabeprozess offen</p></div>
+          </div>
+        </div>
+
+        <div id="portal-deals" class="portal-section">
+          <div class="deal-list" id="dealList"></div>
+        </div>
+
+        <div id="portal-profile" class="portal-section">
+          <div class="card">
+            <h3>Suchprofil erfassen</h3>
+            <p>Diese Angaben werden in Supabase gespeichert und sind deinem Account zugeordnet.</p>
+            <div class="grid-2">
+              <input id="profileIndustries" placeholder="Branchen, z.B. IT, Bau, Energie">
+              <input id="profileRegion" placeholder="Region, z.B. Deutschschweiz">
+              <input id="profileRevenue" placeholder="Umsatzgrösse, z.B. CHF 1–10 Mio.">
+              <input id="profileDealType" placeholder="Deal-Typ, z.B. Nachfolge, Beteiligung, Kapital">
+            </div>
+            <textarea id="profileNotes" placeholder="Weitere Kriterien oder No-Gos"></textarea>
+            <button class="btn" onclick="saveProfile()">Suchprofil speichern</button>
+            <div id="profileStatus" class="status"></div>
+          </div>
+        </div>
+
+        <div id="portal-capital" class="portal-section">
+          <div class="grid-2">
+            <div class="card">
+              <div class="icon">💰</div>
+              <h3>Kapitalbedarf einreichen</h3>
+              <p>Für Unternehmer, die Wachstumskapital, Bridge-Finanzierung oder Beteiligungskapital suchen.</p>
+              <input id="capitalCompany" placeholder="Unternehmen / Projekt">
+              <input id="capitalAmount" placeholder="Kapitalbedarf, z.B. CHF 500'000">
+              <textarea id="capitalDescription" placeholder="Kurzbeschreibung"></textarea>
+              <button class="btn secondary" onclick="submitCapitalRequest()">Kapitalanfrage speichern</button>
+              <div id="capitalStatus" class="status"></div>
+            </div>
+            <div class="card"><div class="icon">🏦</div><h3>Investor-Matching</h3><p>Kapitalanfragen werden nur qualifizierten und passenden Mitgliedern angezeigt.</p></div>
+          </div>
+        </div>
+
+        <div id="portal-nda" class="portal-section">
+          <div class="card">
+            <h3>NDA & Freigabeprozess</h3>
+            <p>Fordere für ausgewählte Opportunitäten eine NDA-Prüfung und Verkäuferfreigabe an.</p>
+            <ul id="ndaList"></ul>
+          </div>
+        </div>
+
+        <div id="portal-upgrade" class="portal-section">
+          <div class="pricing">
+            <div class="price-card">
+              <h3>Starter</h3>
+              <div class="price">CHF 99 <span>/ Monat</span></div>
+              <p>Basis-Zugang zu Deal-Previews und Marktupdates.</p>
+              <button class="btn secondary" onclick="openPayment('Starter', 'CHF 99 / Monat', 'https://buy.stripe.com/6oU9ASgIhek1awD53edUY00')">Starter wählen</button>
+            </div>
+            <div class="price-card featured">
+              <div class="label">Upgrade</div>
+              <h3>Investor</h3>
+              <div class="price">CHF 249 <span>/ Monat</span></div>
+              <p>Priorisierter Zugang, bessere Filter und direkte Einleitungen nach Freigabe.</p>
+              <button class="btn" onclick="openPayment('Investor', 'CHF 249 / Monat', 'https://buy.stripe.com/fZu8wO1Nnfo548f8fqdUY01')">Auf Investor upgraden</button>
+            </div>
+            <div class="price-card">
+              <h3>Professional</h3>
+              <div class="price">CHF 499 <span>/ Monat</span></div>
+              <p>Individuelles Deal Sourcing, Buy-Side Support und exklusive Opportunitäten.</p>
+              <button class="btn secondary" onclick="openPayment('Professional', 'CHF 499 / Monat', 'https://buy.stripe.com/7sY8wO9fPcbT0W3gLWdUY02')">Professional upgraden</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="termin">
+      <div class="container">
+        <div class="cta">
+          <div>
+            <h2>Vertrauliches Erstgespräch buchen.</h2>
+            <p class="lead">Ob Investor, Unternehmer, Family Office oder kapitalseitiger Partner: Buche direkt einen Termin, um DealFlow Schweiz, passende Opportunitäten oder eine mögliche Zusammenarbeit diskret zu besprechen.</p>
+            <p style="color:var(--muted)">Hinweis: DealFlow Schweiz ersetzt keine rechtliche, steuerliche oder finanzielle Beratung. Transaktionen erfolgen nur nach separater Prüfung, Freigabe und individueller Vereinbarung.</p>
+            <a class="btn" href="https://calendly.com/moritz-lengacher/30min" target="_blank" rel="noopener">Calendly extern öffnen</a>
+          </div>
+          <div class="calendly-inline-widget" data-url="https://calendly.com/moritz-lengacher/30min" style="min-width:320px;height:620px;border-radius:24px;overflow:hidden;background:#ffffff;"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="faq">
+      <div class="container">
+        <div class="section-head"><h2>Häufige Fragen.</h2></div>
+        <details><summary>Wer bekommt Zugang zu DealFlow Schweiz?</summary><p>Der Zugang ist für Investoren, Unternehmer, Private Equity, Family Offices, aktive Käufer und ausgewählte Berater gedacht.</p></details>
+        <details><summary>Sind die Deals öffentlich sichtbar?</summary><p>Nein. Deal-Informationen werden anonymisiert und stufenweise geteilt. Konkrete Unterlagen oder Kontakte gibt es erst nach Freigabe und NDA.</p></details>
+        <details><summary>Kann ich mein Unternehmen diskret einreichen?</summary><p>Ja. Über den Mitgliederbereich können später Kapital- und Deal-Anfragen erfasst werden.</p></details>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal" id="authModal">
+    <div class="modal-box">
+      <h3>Mitglieder Login</h3>
+      <p style="color:var(--muted)">Melde dich an oder registriere dich für den geschützten Mitgliederbereich.</p>
+      <div class="auth-tabs">
+        <button id="loginTab" class="active" onclick="setAuthMode('login')">Login</button>
+        <button id="signupTab" onclick="setAuthMode('signup')">Registrieren</button>
+      </div>
+      <input id="authEmail" type="email" placeholder="E-Mail">
+      <input id="authPassword" type="password" placeholder="Passwort">
+      <select id="authPlan" class="signup-only hidden">
+        <option value="Starter">Starter</option>
+        <option value="Investor">Investor</option>
+        <option value="Professional">Professional</option>
+      </select>
+      <div class="modal-actions">
+        <button class="btn" id="authSubmit" onclick="submitAuth()">Einloggen</button>
+        <button class="close-btn" onclick="closeAuth()">Abbrechen</button>
+      </div>
+      <div id="authStatus" class="status"></div>
+      <p style="color:var(--muted);font-size:13px;margin-top:18px;">Registrierung erstellt einen echten Supabase-User. Je nach Supabase-Einstellung ist eine E-Mail-Bestätigung erforderlich.</p>
+    </div>
+  </div>
+
+  <div class="payment-modal" id="paymentModal">
+    <div class="payment-box">
+      <h3 id="paymentPlan">Mitgliedschaft</h3>
+      <div class="payment-price" id="paymentPrice">CHF 0 / Monat</div>
+      <p class="payment-note">
+        Du wirst im nächsten Schritt zu einem sicheren Stripe-Zahlungsfenster weitergeleitet. Kreditkartendaten werden nicht auf dieser Website gespeichert.
+      </p>
+      <div class="modal-actions">
+        <a class="btn" id="paymentLink" href="#" target="_blank" rel="noopener">Sicher bezahlen</a>
+        <button class="close-btn" onclick="closePayment()">Abbrechen</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-trust">Für Investoren, Private Equity, Family Offices und Unternehmer in der Schweiz.</div>
+  <footer>
+    <div class="container footer-grid">
+      <div><strong style="color:var(--white)">DealFlow Schweiz</strong><br>Off-Market Deals · Nachfolgelösungen · Kapitalbedarf</div>
+      <div>DealFlow Schweiz ist ein Produkt der Lengacher &amp; Partner GmbH.<br>Kontakt: Moritz@lengacher-partner.ch<br>© 2026 Alle Rechte vorbehalten.</div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+  <script src="app.js"></script>
+</body>
+</html>
