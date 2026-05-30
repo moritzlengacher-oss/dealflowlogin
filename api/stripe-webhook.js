@@ -74,8 +74,6 @@ export default async function handler(req, res) {
         if (subscriptionId) {
           const subscription = await stripe.subscriptions.retrieve(subscriptionId);
           priceId = subscription.items.data[0]?.price?.id || null;
-        } else if (session.line_items) {
-          priceId = session.line_items.data[0]?.price?.id || null;
         }
       } else {
         const subscription = event.data.object;
@@ -94,6 +92,21 @@ export default async function handler(req, res) {
         return res.status(200).json({ received: true, skipped: true });
       }
 
+      // Zahlung immer speichern, auch wenn der Supabase User noch nicht existiert.
+      const { error: paidError } = await supabaseAdmin
+        .from("paid_memberships")
+        .upsert({
+          email,
+          plan,
+          subscription_status: "active",
+          stripe_customer_id: customerId,
+          stripe_subscription_id: subscriptionId,
+          updated_at: new Date().toISOString()
+        }, { onConflict: "email" });
+
+      if (paidError) throw paidError;
+
+      // Falls User bereits existiert, direkt freischalten.
       const { data: users, error: listError } = await supabaseAdmin.auth.admin.listUsers();
       if (listError) throw listError;
 
@@ -101,35 +114,43 @@ export default async function handler(req, res) {
         (u) => u.email && u.email.toLowerCase() === email.toLowerCase()
       );
 
-      if (!user) {
-        console.warn("No Supabase user found for Stripe email:", email);
-        return res.status(200).json({ received: true, user_found: false });
+      if (user) {
+        const { error: upsertError } = await supabaseAdmin
+          .from("member_profiles")
+          .upsert({
+            id: user.id,
+            email,
+            plan,
+            subscription_status: "active",
+            stripe_customer_id: customerId,
+            stripe_subscription_id: subscriptionId,
+            updated_at: new Date().toISOString()
+          });
+
+        if (upsertError) throw upsertError;
       }
 
-      const { error: upsertError } = await supabaseAdmin
-        .from("member_profiles")
-        .upsert({
-          id: user.id,
-          email,
-          plan,
-          stripe_customer_id: customerId,
-          stripe_subscription_id: subscriptionId,
-          updated_at: new Date().toISOString()
-        });
-
-      if (upsertError) throw upsertError;
-
-      console.log(`Updated ${email} to ${plan}`);
+      console.log(`Paid membership recorded for ${email} as ${plan}`);
     }
 
     if (event.type === "customer.subscription.deleted") {
       const subscription = event.data.object;
       const customerId = subscription.customer;
 
+      const { error: paidUpdateError } = await supabaseAdmin
+        .from("paid_memberships")
+        .update({
+          subscription_status: "cancelled",
+          updated_at: new Date().toISOString()
+        })
+        .eq("stripe_customer_id", customerId);
+
+      if (paidUpdateError) throw paidUpdateError;
+
       const { error } = await supabaseAdmin
         .from("member_profiles")
         .update({
-          plan: "Starter",
+          subscription_status: "cancelled",
           stripe_subscription_id: null,
           updated_at: new Date().toISOString()
         })
